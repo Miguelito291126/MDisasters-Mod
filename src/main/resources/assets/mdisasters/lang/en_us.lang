@@ -1,0 +1,10 @@
+item.meteors_spawn.name=Meteor Spawn
+item.tornado_spawn.name=Tornado Spawn
+item.tsunami_spawn.name=Tsunami Spawn
+item.volcano_spawn.name=Volcano Spawn
+
+tile.volcano_block.name=Volcano Block
+
+itemGroup.mdisasters=MDisasters
+
+generator.volcano_world=Volcano World

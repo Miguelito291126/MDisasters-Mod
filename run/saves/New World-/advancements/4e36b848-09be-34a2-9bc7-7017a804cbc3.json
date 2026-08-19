@@ -1,0 +1,8 @@
+{
+  "minecraft:recipes/brewing/cauldron": {
+    "criteria": {
+      "has_water_bucket": "2026-08-19 20:44:53 +0200"
+    },
+    "done": true
+  }
+}

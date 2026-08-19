@@ -1,0 +1,16 @@
+[
+  {
+    "modid": "mdisasters",
+    "name": "MDisasters",
+    "description": "A natural disasters mod",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "",
+    "updateUrl": "",
+    "authorList": ["Miguel"],
+    "credits": "Miguel",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]
