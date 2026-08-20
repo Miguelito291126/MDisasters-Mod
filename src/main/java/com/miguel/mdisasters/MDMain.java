@@ -2,6 +2,7 @@ package com.miguel.mdisasters;
 
 import com.miguel.mdisasters.proxy.CommonProxy;
 import com.miguel.mdisasters.tabs.MDTab;
+import com.miguel.mdisasters.world.WorldTypeVolcano;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.world.WorldType;
 import net.minecraftforge.fml.common.Mod;
@@ -17,20 +18,20 @@ public class MDMain
 {
     public static final String MODID = "mdisasters";
     public static final String NAME = "MDisasters";
-    public static final String VERSION = "2.0.3.2";
+    public static final String VERSION = "2.0.3.3";
     public static final String CLIENT_PROXY_CLASS = "com.miguel.mdisasters.proxy.ClientProxy";
     public static final String COMMON_PROXY_CLASS = "com.miguel.mdisasters.proxy.CommonProxy";
 
     private static Logger logger;
 
-    public static final CreativeTabs MD_TAB = new MDTab();
+    public static CreativeTabs MD_TAB;
     public static WorldType VOLCANO_WORLD;
 
     @SidedProxy(clientSide = CLIENT_PROXY_CLASS, serverSide = COMMON_PROXY_CLASS)
     public static CommonProxy proxy;
 
 
-    @Mod.Instance(MODID)
+    @Mod.Instance
     public static MDMain instance;
 
 
@@ -39,6 +40,10 @@ public class MDMain
     {
         logger = event.getModLog();
         logger.info("MDMain preInit cargado!");
+
+        MD_TAB = new MDTab();
+        VOLCANO_WORLD = new WorldTypeVolcano();
+
         proxy.preInit(event);
     }
 

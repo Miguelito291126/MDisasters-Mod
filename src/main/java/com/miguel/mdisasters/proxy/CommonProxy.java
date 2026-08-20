@@ -19,7 +19,6 @@ public class CommonProxy {
         InitBiomes.registerBiomes();
         GameRegistry.registerWorldGenerator(new ModWorldGen(), 0);
         MinecraftForge.TERRAIN_GEN_BUS.register(new TerrainEventHandler());
-
     }
 
     public void serverStarting(FMLServerStartingEvent event) {
@@ -27,7 +26,7 @@ public class CommonProxy {
     }
 
     public void Init(FMLInitializationEvent e) {
-        MDMain.VOLCANO_WORLD = new WorldTypeVolcano();
+        // Dejar vacío o para registros que requieran esta fase
     }
 
     public void postInit(FMLPostInitializationEvent e) {
