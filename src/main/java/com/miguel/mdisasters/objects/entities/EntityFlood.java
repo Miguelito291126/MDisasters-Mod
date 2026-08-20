@@ -88,18 +88,23 @@ public class EntityFlood extends Entity {
 
     private void updateFlatFlood(BlockPos center) {
         int r = (int) Math.ceil(this.currentRadius);
-        int targetY = center.getY(); // Mantener estricto el nivel Y base
+        int targetY = center.getY();
 
-        // Recorre únicamente el perímetro/anillo del radio actual
+        double innerRadiusSq = Math.max(0, (this.currentRadius - 1.5) * (this.currentRadius - 1.5));
+        double outerRadiusSq = this.currentRadius * this.currentRadius;
+
+        // Solo recorremos el área cercana al borde de la circunferencia actual
         for (int x = -r; x <= r; x++) {
             for (int z = -r; z <= r; z++) {
-                // Comprobación de círculo perfecto
-                if (x * x + z * z <= this.currentRadius * this.currentRadius) {
+                double distSq = x * x + z * z;
+
+                // Solo coloca bloques si está DENTRO del borde del radio actual (evita rellenar el centro)
+                if (distSq >= innerRadiusSq && distSq <= outerRadiusSq) {
                     BlockPos targetPos = new BlockPos(center.getX() + x, targetY, center.getZ() + z);
 
-                    // Reemplaza solo si es aire o plantas/hierba en ese nivel exacto
                     if (world.isAirBlock(targetPos) || world.getBlockState(targetPos).getBlock().isReplaceable(world, targetPos)) {
-                        world.setBlockState(targetPos, Blocks.WATER.getDefaultState(), 3);
+                        // Flag 2: Actualiza el cliente SIN notificar a los bloques vecinos (evita la física de agua nativa)
+                        world.setBlockState(targetPos, Blocks.WATER.getDefaultState(), 2);
                     }
                 }
             }
