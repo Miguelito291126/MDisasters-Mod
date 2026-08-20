@@ -31,6 +31,10 @@ public class DisasterSpawnerHandler {
             return;
         }
 
+        if (!MDConfig.SPAWNER.enableSpawner) {
+            return;
+        }
+
         // Leemos directamente de MDConfig en cada tick
         int spawnChance = MDConfig.SPAWNER.spawnChance;
 

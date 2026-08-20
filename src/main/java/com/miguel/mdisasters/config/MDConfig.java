@@ -85,6 +85,9 @@ public class MDConfig {
     }
 
     public static class SpawnerCategory {
+        @Config.Comment("Habilita o deshabilita la generación automática de desastres en el mundo.")
+        public boolean enableSpawner = true;
+
         @Config.Comment("Probabilidad de generación aleatoria (en ticks). Menor número = Más frecuente.")
         @Config.RangeInt(min = 200, max = 100000)
         public int spawnChance = 12000;

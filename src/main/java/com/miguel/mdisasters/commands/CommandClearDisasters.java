@@ -53,7 +53,7 @@ public class CommandClearDisasters extends CommandBase {
                     }
                 }
 
-                TextComponentString message = new TextComponentString(count + "disasters have been eliminated from the world.");
+                TextComponentString message = new TextComponentString(count + " disasters have been eliminated from the world.");
                 message.getStyle().setColor(TextFormatting.GREEN);
                 sender.sendMessage(message);
             }
