@@ -53,13 +53,13 @@ public class CommandClearDisasters extends CommandBase {
                     }
                 }
 
-                TextComponentString message = new TextComponentString("Se han eliminado " + count + " desastres del mundo.");
+                TextComponentString message = new TextComponentString(count + "disasters have been eliminated from the world.");
                 message.getStyle().setColor(TextFormatting.GREEN);
                 sender.sendMessage(message);
             }
         } else {
             // Mensaje de uso en caso de escribir mal el subcomando
-            TextComponentString usage = new TextComponentString("Uso correcto: /mdisasters clear");
+            TextComponentString usage = new TextComponentString("Correct usage: /mdisasters clear");
             usage.getStyle().setColor(TextFormatting.RED);
             sender.sendMessage(usage);
         }

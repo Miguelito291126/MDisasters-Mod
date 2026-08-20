@@ -35,7 +35,7 @@ public class RenderTornado extends Render<EntityTornado> {
         BufferBuilder buffer = tessellator.getBuffer();
 
         int layers = 15;        // Altura/Anillos del tornado
-        double maxHeight = 12.0; // Altura total
+        double maxHeight = 30.0; // Altura total
         float rotation = (entity.ticksExisted + partialTicks) * 15.0F; // Velocidad de giro
 
         // Dibujar embudo en capas

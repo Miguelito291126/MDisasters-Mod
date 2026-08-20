@@ -16,7 +16,7 @@ public class EntityTornado extends Entity {
     public static double speed = 0.2;
     public static final double maxSpeed = 0.4;
     public static final int TornadoWidth = 4;
-    public static final int TornadoHeight  = 10;
+    public static final int TornadoHeight  = 20;
 
     public EntityTornado(World world) {
         super(world);
