@@ -1,10 +1,9 @@
 package com.miguel.mdisasters.objects.items;
 
 import com.miguel.mdisasters.MDMain;
+import com.miguel.mdisasters.config.MDConfig;
 import com.miguel.mdisasters.init.InitItems;
 import com.miguel.mdisasters.objects.entities.EntityMeteor;
-import com.miguel.mdisasters.tabs.MDTab;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -37,13 +36,12 @@ public class ItemMeteorsSpawner extends Item {
             BlockPos targetPos = rayTrace.getBlockPos().offset(rayTrace.sideHit);
 
             if (!world.isRemote) {
-                // Instancia correcta usando (world, player)
                 EntityMeteor meteor = new EntityMeteor(world, player);
 
-                // Posicionamos el meteorito 30 bloques por encima del punto seleccionado
+                // Posiciona el meteorito usando el valor de MDConfig.METEOR.meteorDistance
                 meteor.setLocationAndAngles(
                         targetPos.getX() + 0.5,
-                        targetPos.getY() + 30.0,
+                        targetPos.getY() + MDConfig.METEOR.meteorDistance,
                         targetPos.getZ() + 0.5,
                         player.rotationYaw,
                         0.0F

@@ -1,5 +1,6 @@
 package com.miguel.mdisasters.render;
 
+import com.miguel.mdisasters.config.MDConfig;
 import com.miguel.mdisasters.objects.entities.EntityTsunami;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
@@ -9,15 +10,16 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
+import org.slf4j.MDC;
 
 import javax.annotation.Nullable;
 
 public class RenderTsunami extends Render<EntityTsunami> {
 
     // Dimensiones de la pared de bloques de agua
-    private static final int WAVE_WIDTH = EntityTsunami.waveWidth;  // Ancho en bloques
-    private static final int WAVE_HEIGHT =  EntityTsunami.waveHeight;  // Altura en bloques
-    private static final int WAVE_DEPTH = 3;   // Grosor en bloques
+    private int WAVE_WIDTH = MDConfig.TSUNAMI.waveHeight;  // Ancho en bloques
+    private int WAVE_HEIGHT = MDConfig.TSUNAMI.waveHeight;  // Altura en bloques
+    private int WAVE_DEPTH = MDConfig.TSUNAMI.waveDepth;   // Grosor en bloques
 
     public RenderTsunami(RenderManager renderManager) {
         super(renderManager);

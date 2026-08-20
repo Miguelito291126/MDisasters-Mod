@@ -1,5 +1,6 @@
 package com.miguel.mdisasters.objects.entities;
 
+import com.miguel.mdisasters.config.MDConfig;
 import com.miguel.mdisasters.init.InitEntities;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
@@ -13,14 +14,10 @@ import net.minecraft.world.World;
 import java.util.List;
 
 public class EntityTornado extends Entity {
-    public static double speed = 0.2;
-    public static final double maxSpeed = 0.4;
-    public static final int TornadoWidth = 4;
-    public static final int TornadoHeight  = 20;
 
     public EntityTornado(World world) {
         super(world);
-        this.setSize(TornadoWidth, TornadoHeight);
+        this.setSize(MDConfig.TORNADO.tornadoWidth, MDConfig.TORNADO.tornadoHeight);
         this.noClip = true;
         this.motionX = 0.2;
         this.motionZ = 0.0;
@@ -32,8 +29,8 @@ public class EntityTornado extends Entity {
         this(world);
         float yaw = player.rotationYaw;
 
-        this.motionX = -MathHelper.sin(yaw * 0.017453292F) * speed;
-        this.motionZ = MathHelper.cos(yaw * 0.017453292F) * speed;
+        this.motionX = -MathHelper.sin(yaw * 0.017453292F) * MDConfig.TORNADO.speed;
+        this.motionZ = MathHelper.cos(yaw * 0.017453292F) * MDConfig.TORNADO.speed;
     }
 
     @Override
@@ -50,41 +47,50 @@ public class EntityTornado extends Entity {
 
             this.setPosition(this.posX, groundPos.getY(), this.posZ);
 
-            double radius = 8.0;
+            // Usa la configuración para el radio de succión
+            double radius = MDConfig.TORNADO.tornadoWidth;
             List<Entity> list = world.getEntitiesWithinAABB(Entity.class, getEntityBoundingBox().grow(radius));
+
             for (Entity e : list) {
                 if (e != this) {
+                    // Corregido: Atraer HACIA el centro del tornado
                     double dx = posX - e.posX;
                     double dz = posZ - e.posZ;
                     double dist = Math.max(0.1, Math.sqrt(dx * dx + dz * dz));
 
-                    e.motionX += (dx / dist) * 0.2;
+                    // Tirón hacia el vórtice
+                    e.motionX += (dx / dist) * 0.15;
                     e.motionY = 0.35;
-                    e.motionZ += (dz / dist) * 0.2;
+                    e.motionZ += (dz / dist) * 0.15;
 
-                    e.velocityChanged = true; // Sincroniza el empuje con los jugadores
+                    e.velocityChanged = true;
                 }
             }
 
+            // Variación aleatoria de trayectoria
             if (this.ticksExisted % 20 == 0) {
                 this.motionX += (this.rand.nextDouble() - 0.5) * 0.3;
                 this.motionZ += (this.rand.nextDouble() - 0.5) * 0.3;
 
-
-                this.motionX = MathHelper.clamp(this.motionX, -maxSpeed, maxSpeed);
-                this.motionZ = MathHelper.clamp(this.motionZ, -maxSpeed, maxSpeed);
+                this.motionX = MathHelper.clamp(this.motionX, -MDConfig.TORNADO.maxSpeed, MDConfig.TORNADO.maxSpeed);
+                this.motionZ = MathHelper.clamp(this.motionZ, -MDConfig.TORNADO.maxSpeed, MDConfig.TORNADO.maxSpeed);
             }
 
             this.move(MoverType.SELF, this.motionX, 0, this.motionZ);
-        }
 
-        if (world.isRemote) {
+            // Destrucción tras tiempo límite (ejemplo: ~1 minuto / 1200 ticks)
+            if (this.ticksExisted > 1200) {
+                this.setDead();
+            }
+        } else {
+            // Renderizado de partículas adaptado a la anchura de la config
+            double radioBase = 1.0;
+            double radioMaximo = MDConfig.TORNADO.tornadoWidth / 2.0;
+
             for (int i = 0; i < 60; i++) {
                 double progresoAltura = rand.nextDouble();
                 double dy = posY + (progresoAltura * height);
 
-                double radioBase = 1.0;
-                double radioMaximo = 5.0;
                 double radioActual = radioBase + (Math.pow(progresoAltura, 1.5) * (radioMaximo - radioBase));
 
                 double angulo = rand.nextDouble() * Math.PI * 2;
@@ -120,11 +126,13 @@ public class EntityTornado extends Entity {
 
     @Override
     protected void readEntityFromNBT(NBTTagCompound compound) {
-        // Carga de datos NBT si fuera necesaria
+        this.motionX = compound.getDouble("MotionX");
+        this.motionZ = compound.getDouble("MotionZ");
     }
 
     @Override
     protected void writeEntityToNBT(NBTTagCompound compound) {
-        // Guardado de datos NBT si fuera necesaria
+        compound.setDouble("MotionX", this.motionX);
+        compound.setDouble("MotionZ", this.motionZ);
     }
 }

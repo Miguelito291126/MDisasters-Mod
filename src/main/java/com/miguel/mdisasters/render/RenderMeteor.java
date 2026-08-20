@@ -1,5 +1,6 @@
 package com.miguel.mdisasters.render;
 
+import com.miguel.mdisasters.config.MDConfig;
 import com.miguel.mdisasters.objects.entities.EntityMeteor;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -12,8 +13,6 @@ import net.minecraft.util.ResourceLocation;
 import javax.annotation.Nullable;
 
 public class RenderMeteor extends Render<EntityMeteor> {
-    // 1. CORRECCIÓN DE LA RUTA: Solo pones la ruta relativa dentro de textures/ sin la extensión .png
-    // Añade "textures/" y la extensión ".png"
     private static final ResourceLocation TEXTURE = new ResourceLocation("mdisasters", "textures/blocks/volcano_block.png");
 
     public RenderMeteor(RenderManager renderManager) {
@@ -25,13 +24,21 @@ public class RenderMeteor extends Render<EntityMeteor> {
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, z);
 
-        // 2. Vincula la textura correctamente
+        // 1. Escalar el renderizador según el ancho y alto del MDConfig
+        float scaleX = MDConfig.METEOR.meteorWidth;
+        float scaleY = MDConfig.METEOR.meteorHeight;
+        float scaleZ = MDConfig.METEOR.meteorWidth;
+        GlStateManager.scale(scaleX, scaleY, scaleZ);
+
+        // 2. Rotación continua en vuelo para dar efecto de caída realista
+        float rotation = (entity.ticksExisted + partialTicks) * 10.0F;
+        GlStateManager.rotate(rotation, 1.0F, 1.0F, 0.5F);
+
         bindTexture(TEXTURE);
 
         Tessellator tess = Tessellator.getInstance();
         BufferBuilder buf = tess.getBuffer();
 
-        // Solo UN buf.begin() para todo el cubo
         buf.begin(7, DefaultVertexFormats.POSITION_TEX);
 
         // Cara Frontal (Z+)

@@ -1,5 +1,6 @@
 package com.miguel.mdisasters.objects.entities;
 
+import com.miguel.mdisasters.config.MDConfig;
 import com.miguel.mdisasters.init.InitEntities;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
@@ -8,22 +9,18 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class EntityMeteor extends Entity {
 
-    public static double speed = 1.0; // velocidad de caída
-    public static final float MeteorHeight  = 1.5f;
-    public static final float MeteorWidth = 1.5f;
-
+    public double speed = MDConfig.METEOR.speed; // Velocidad de caída propia
 
     public EntityMeteor(World world) {
         super(world);
-        this.setSize(MeteorWidth, MeteorHeight);
+        // Corregido: Usar meteorWidth en lugar de meteorWeight
+        this.setSize(MDConfig.METEOR.meteorWidth, MDConfig.METEOR.meteorHeight);
         this.motionY = -speed;
         InitEntities.ENTITIES.add(this);
-
     }
 
     public EntityMeteor(World world, EntityPlayer player) {
@@ -45,7 +42,7 @@ public class EntityMeteor extends Entity {
             // Aplicar el movimiento
             this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
 
-            // Se detona si colisiona contra cualquier superficie (suelo, pared o techo)
+            // Detonar si colisiona contra cualquier superficie
             if (this.collided || this.onGround) {
                 explode();
                 this.setDead();
@@ -62,21 +59,24 @@ public class EntityMeteor extends Entity {
             }
         }
 
-        // Muerte de seguridad tras 20 segundos para no saturar memoria si cae al vacío
+        // Muerte de seguridad tras 20 segundos
         if (this.ticksExisted > 400) {
             this.setDead();
         }
     }
 
     private void explode() {
+        // Usar los valores de la configuración
+        int radius = MDConfig.METEOR.explosionRadius;
+        float power = MDConfig.METEOR.explosionPower;
+
         // Daño a entidades cercanas
-        world.getEntitiesWithinAABB(Entity.class, getEntityBoundingBox().grow(4.0))
+        world.getEntitiesWithinAABB(Entity.class, getEntityBoundingBox().grow(radius))
                 .stream()
                 .filter(e -> e != this)
                 .forEach(e -> e.attackEntityFrom(DamageSource.GENERIC, 25.0F));
 
         // Generar cráter
-        int radius = 4;
         BlockPos center = new BlockPos(this);
 
         for (int x = -radius; x <= radius; x++) {
@@ -92,8 +92,8 @@ public class EntityMeteor extends Entity {
             }
         }
 
-        // Explosión y fuego
-        world.createExplosion(this, posX, posY, posZ, 3.5F, true);
+        // Explosión visual/física
+        world.createExplosion(this, posX, posY, posZ, power, true);
     }
 
     @Override
@@ -104,7 +104,11 @@ public class EntityMeteor extends Entity {
 
     @Override
     protected void readEntityFromNBT(NBTTagCompound compound) {
-        this.speed = compound.getDouble("Speed");
+        if (compound.hasKey("Speed")) {
+            this.speed = compound.getDouble("Speed");
+        } else {
+            this.speed = MDConfig.METEOR.speed;
+        }
     }
 
     @Override
