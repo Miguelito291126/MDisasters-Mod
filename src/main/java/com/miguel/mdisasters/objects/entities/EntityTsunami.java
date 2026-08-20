@@ -43,16 +43,6 @@ public class EntityTsunami extends Entity {
         super.onUpdate();
 
         if (!world.isRemote) {
-            // Ajustar altura a la superficie del suelo real
-            BlockPos currentPos = new BlockPos(this.posX, this.posY, this.posZ);
-            BlockPos groundPos = world.getTopSolidOrLiquidBlock(currentPos);
-
-            while (world.getBlockState(groundPos).getBlock() == Blocks.WATER && groundPos.getY() > 0) {
-                groundPos = groundPos.down();
-            }
-
-            this.setPosition(this.posX, groundPos.getY() + 1, this.posZ);
-
             this.motionX = -MathHelper.sin(this.rotationYaw * 0.017453292F) * this.speed;
             this.motionZ = MathHelper.cos(this.rotationYaw * 0.017453292F) * this.speed;
             this.motionY = 0;
@@ -89,10 +79,6 @@ public class EntityTsunami extends Entity {
 
                 world.spawnParticle(EnumParticleTypes.WATER_SPLASH, dx, dy, dz, 0, 0.2, 0);
             }
-        }
-
-        if (this.ticksExisted > 600) {
-            this.setDead();
         }
     }
 
