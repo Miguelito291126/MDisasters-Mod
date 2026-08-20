@@ -4,9 +4,7 @@ import com.miguel.mdisasters.MDMain; // Ajusta a tu clase principal donde tengas
 import com.miguel.mdisasters.init.InitBlocks;
 import com.miguel.mdisasters.init.InitEntities;
 import com.miguel.mdisasters.init.InitItems;
-import com.miguel.mdisasters.objects.entities.EntityMeteor;
-import com.miguel.mdisasters.objects.entities.EntityTornado;
-import com.miguel.mdisasters.objects.entities.EntityTsunami;
+import com.miguel.mdisasters.objects.entities.*;
 import com.miguel.mdisasters.render.RenderMeteor;
 import com.miguel.mdisasters.render.RenderTornado;
 import com.miguel.mdisasters.render.RenderTsunami;
@@ -45,6 +43,9 @@ public class RegistryHandler {
             InitEntities.registerEntity("meteor", EntityMeteor.class, 160, 3, true);
             InitEntities.registerEntity("tornado", EntityTornado.class, 256, 3, true);
             InitEntities.registerEntity("tsunami", EntityTsunami.class, 256, 3, true);
+            InitEntities.registerEntity("tsunami_lava", EntityTsunamiLava.class, 256, 3, true);
+            InitEntities.registerEntity("flood", EntityFlood.class, 256, 3, true);
+            InitEntities.registerEntity("earthquake", EntityEarthquake.class, 256, 3, true);
         }
     }
 

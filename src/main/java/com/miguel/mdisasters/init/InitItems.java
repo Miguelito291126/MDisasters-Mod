@@ -13,6 +13,9 @@ public class InitItems {
     public static Item TORNADO_ITEM = new ItemTornadoSpawner("tornado_spawn");
     public static Item METEORS_ITEM = new ItemMeteorsSpawner("meteors_spawn");
     public static Item VOLCANO_ITEM = new itemVolcanoSpawner("volcano_spawn");
+    public static Item LAVA_TSUNAMI_ITEM = new itemTsunamiLavaSpawner("tsunami_lava_spawn");
+    public static Item FLOOD_ITEM = new itemFloodSpawner("flood_spawn");
+    public static Item EARTHQUAKE_ITEM = new itemEathquakeSpawner("earthquake_spawn");
     public static Item VOLCANO_BLOCK = new itemVolcanoBlock(InitBlocks.VOLCANO_BLOCK);
 
 }

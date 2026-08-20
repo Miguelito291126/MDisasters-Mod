@@ -27,8 +27,10 @@ public class itemVolcanoSpawner extends Item {
     }
 
     @Override
-    public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand,
-                                      EnumFacing facing, float hitX, float hitY, float hitZ) {
+    public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+
+        ItemStack stack = player.getHeldItem(hand);
+
         if (!world.isRemote) {
             // Instancia de Random obtenida del World
             Random rand = world.rand;
@@ -68,11 +70,11 @@ public class itemVolcanoSpawner extends Item {
                 }
             }
 
-            // Consumir el ítem si no está en modo Creativo
-            if (!player.capabilities.isCreativeMode) {
-                ItemStack stack = player.getHeldItem(hand);
-                stack.shrink(1);
-            }
+
+        }
+        // Consumir el ítem si no está en modo Creativo
+        if (!player.capabilities.isCreativeMode) {
+            stack.shrink(1);
         }
 
         return EnumActionResult.SUCCESS;

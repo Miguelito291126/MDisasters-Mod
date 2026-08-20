@@ -1,6 +1,7 @@
 package com.miguel.mdisasters.config;
 
 import com.miguel.mdisasters.MDMain;
+import com.sun.scenario.effect.Flood;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
@@ -21,6 +22,12 @@ public class MDConfig {
 
     @Config.Comment("Configuración del Spawner Aleatorio")
     public static SpawnerCategory SPAWNER = new SpawnerCategory();
+
+    @Config.Comment("Configuración del Spawner Aleatorio")
+    public static EarthquakeCategory EARTHQUAKE = new EarthquakeCategory();
+
+    @Config.Comment("Configuración del Spawner Aleatorio")
+    public static FloodCategory FLOOD = new FloodCategory();
 
     public static class TsunamiCategory {
         @Config.Comment("Velocidad a la que va")
@@ -91,6 +98,30 @@ public class MDConfig {
         @Config.Comment("Probabilidad de generación aleatoria (en ticks). Menor número = Más frecuente.")
         @Config.RangeInt(min = 200, max = 100000)
         public int spawnChance = 12000;
+    }
+
+    public static class EarthquakeCategory {
+        @Config.Comment("Intensidad del terremoto")
+        @Config.RangeInt(min = 1, max = 10)
+        public int earthquakeIntensity = 7;
+
+        @Config.Comment("Tiempo que dura el terremoto (en segundos)")
+        @Config.RangeInt(min = 1, max = 10)
+        public int earthquakeDuration = 60;
+
+        @Config.Comment("Radio Maximo")
+        @Config.RangeInt(min = 1, max = 10)
+        public int earthquakeMaxRadius = 80;
+    }
+
+    public static class FloodCategory {
+        @Config.Comment("Velcidad")
+        @Config.RangeInt(min = 1, max = 10)
+        public double waterSpeed = 0.4;
+
+        @Config.Comment("Velcidad")
+        @Config.RangeInt(min = 1, max = 10)
+        public double waterMaxRadius = 10;
     }
 
     @Mod.EventBusSubscriber(modid = MDMain.MODID)

@@ -56,7 +56,6 @@ public class ItemMeteorsSpawner extends Item {
 
             return new ActionResult<>(EnumActionResult.SUCCESS, stack);
         }
-
         return new ActionResult<>(EnumActionResult.PASS, stack);
     }
 

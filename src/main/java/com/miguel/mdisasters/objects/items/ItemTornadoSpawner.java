@@ -45,6 +45,12 @@ public class ItemTornadoSpawner extends Item
 
                 world.spawnEntity(tornado); // spawnea la entidad en el servidor
             }
+
+            if (!player.capabilities.isCreativeMode)
+            {
+                stack.shrink(1);
+            }
+
             return new ActionResult<>(EnumActionResult.SUCCESS, stack);
         }
         return new ActionResult<>(EnumActionResult.PASS, stack);

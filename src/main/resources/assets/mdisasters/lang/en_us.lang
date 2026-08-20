@@ -2,6 +2,9 @@ item.meteors_spawn.name=Meteor Spawn
 item.tornado_spawn.name=Tornado Spawn
 item.tsunami_spawn.name=Tsunami Spawn
 item.volcano_spawn.name=Volcano Spawn
+item.earthquake_spawn.name=Earthquake Spawn
+item.tsunami_lava_spawn.name=Tsunami Lava Spawn
+item.flood_spawn.name=Flood Spawn
 
 tile.volcano_block.name=Volcano Block
 
