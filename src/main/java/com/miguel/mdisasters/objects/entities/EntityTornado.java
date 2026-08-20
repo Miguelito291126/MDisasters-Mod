@@ -77,11 +77,6 @@ public class EntityTornado extends Entity {
             }
 
             this.move(MoverType.SELF, this.motionX, 0, this.motionZ);
-
-            // Destrucción tras tiempo límite (ejemplo: ~1 minuto / 1200 ticks)
-            if (this.ticksExisted > 1200) {
-                this.setDead();
-            }
         } else {
             // Renderizado de partículas adaptado a la anchura de la config
             double radioBase = 1.0;
