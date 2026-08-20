@@ -7,6 +7,8 @@ import com.miguel.mdisasters.objects.entities.EntityTornado;
 import com.miguel.mdisasters.objects.entities.EntityTsunami;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -35,7 +37,6 @@ public class DisasterSpawnerHandler {
             return;
         }
 
-        // Leemos directamente de MDConfig en cada tick
         int spawnChance = MDConfig.SPAWNER.spawnChance;
 
         for (EntityPlayer player : world.playerEntities) {
@@ -59,21 +60,33 @@ public class DisasterSpawnerHandler {
         switch (disasterType) {
             case 0:
                 EntityMeteor meteor = new EntityMeteor(world);
-                meteor.setPosition(spawnX, targetPos.getY() + 50, spawnZ);
+                meteor.setPosition(spawnX, targetPos.getY() + MDConfig.METEOR.meteorDistance, spawnZ);
                 world.spawnEntity(meteor);
+
+                sendDisasterAlert(player, "A meteorite is falling near your location!", TextFormatting.RED);
                 break;
 
             case 1:
                 EntityTornado tornado = new EntityTornado(world);
                 tornado.setPosition(spawnX, targetPos.getY(), spawnZ);
                 world.spawnEntity(tornado);
+
+                sendDisasterAlert(player, "A tornado has formed nearby!", TextFormatting.DARK_GRAY);
                 break;
 
             case 2:
                 EntityTsunami tsunami = new EntityTsunami(world, player);
                 tsunami.setPosition(spawnX, targetPos.getY(), spawnZ);
                 world.spawnEntity(tsunami);
+
+                sendDisasterAlert(player, "A tsunami is approaching!", TextFormatting.BLUE);
                 break;
         }
+    }
+
+    private static void sendDisasterAlert(EntityPlayer player, String text, TextFormatting color) {
+        TextComponentString message = new TextComponentString(text);
+        message.getStyle().setColor(color);
+        player.sendMessage(message);
     }
 }
