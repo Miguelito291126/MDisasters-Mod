@@ -108,7 +108,14 @@ public class EntityFlood extends Entity {
                     BlockPos targetPos = center.add(x, 0, z);
 
                     if (world.isAirBlock(targetPos) || world.getBlockState(targetPos).getBlock().isReplaceable(world, targetPos)) {
-                        world.setBlockState(targetPos, Blocks.WATER.getDefaultState(), 2);
+                        world.setBlockState(targetPos, Blocks.WATER.getDefaultState(), 3);
+                    }
+
+                    // Rellenar hacia abajo si hay un precipicio o depresión en el terreno
+                    BlockPos downPos = targetPos.down();
+                    while (downPos.getY() > 0 && (world.isAirBlock(downPos) || world.getBlockState(downPos).getBlock().isReplaceable(world, downPos))) {
+                        world.setBlockState(downPos, Blocks.WATER.getDefaultState(), 3);
+                        downPos = downPos.down();
                     }
                 }
             }

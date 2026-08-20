@@ -2,9 +2,7 @@ package com.miguel.mdisasters.events;
 
 import com.miguel.mdisasters.MDMain;
 import com.miguel.mdisasters.config.MDConfig;
-import com.miguel.mdisasters.objects.entities.EntityMeteor;
-import com.miguel.mdisasters.objects.entities.EntityTornado;
-import com.miguel.mdisasters.objects.entities.EntityTsunami;
+import com.miguel.mdisasters.objects.entities.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
@@ -80,6 +78,22 @@ public class DisasterSpawnerHandler {
                 world.spawnEntity(tsunami);
 
                 sendDisasterAlert(player, "A tsunami is approaching!", TextFormatting.BLUE);
+                break;
+
+            case 3:
+                EntityFlood flood = new EntityFlood(world, player);
+                flood.setPosition(spawnX, targetPos.getY(), spawnZ);
+                world.spawnEntity(flood);
+
+                sendDisasterAlert(player, "A flood is approaching!", TextFormatting.DARK_BLUE);
+                break;
+
+            case 4:
+                EntityEarthquake earthquake = new EntityEarthquake(world, player);
+                earthquake.setPosition(spawnX, targetPos.getY(), spawnZ);
+                world.spawnEntity(earthquake);
+
+                sendDisasterAlert(player, "A earthquake is appear!", TextFormatting.DARK_RED);
                 break;
         }
     }
