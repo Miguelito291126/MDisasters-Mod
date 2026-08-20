@@ -105,9 +105,9 @@ public class MDConfig {
         @Config.RangeInt(min = 1, max = 10)
         public int earthquakeIntensity = 7;
 
-        @Config.Comment("Tiempo que dura el terremoto (en segundos)")
+        @Config.Comment("Tiempo que dura el terremoto (en microsegundos)")
         @Config.RangeInt(min = 1, max = 10)
-        public int earthquakeDuration = 60;
+        public int earthquakeDuration = 6000;
 
         @Config.Comment("Radio Maximo")
         @Config.RangeInt(min = 1, max = 10)
@@ -115,13 +115,16 @@ public class MDConfig {
     }
 
     public static class FloodCategory {
-        @Config.Comment("Velcidad")
+        @Config.Comment("Velocidad")
         @Config.RangeInt(min = 1, max = 10)
         public double waterSpeed = 0.4;
 
-        @Config.Comment("Velcidad")
+        @Config.Comment("Radio")
         @Config.RangeInt(min = 1, max = 10)
-        public double waterMaxRadius = 10;
+        public double waterMaxRadius = 100;
+
+        @Config.Comment("Si el agua se expande")
+        public boolean infiniteWaterExpansion = false;
     }
 
     @Mod.EventBusSubscriber(modid = MDMain.MODID)

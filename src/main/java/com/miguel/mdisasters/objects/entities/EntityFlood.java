@@ -20,13 +20,15 @@ public class EntityFlood extends Entity {
 
     public EntityFlood(World world) {
         super(world);
-        this.setSize(1.0f, MDConfig.TSUNAMI.waveHeight);
+        this.setSize(1.0f, 1.0f);
         this.noClip = true;
         InitEntities.ENTITIES.add(this);
     }
 
     public EntityFlood(World world, EntityPlayer player) {
         this(world);
+        // Fija la posición exacta de origen (A nivel de los pies del jugador)
+        this.setPosition(player.posX, player.posY, player.posZ);
     }
 
     @Override
@@ -38,9 +40,9 @@ public class EntityFlood extends Entity {
         this.currentRadius += this.speed;
 
         float currentSize = (float) this.currentRadius * 2;
-        this.setSize(currentSize, MDConfig.TSUNAMI.waveHeight);
+        this.setSize(currentSize, 1.0f);
 
-        if (currentRadius >= maxRadius) {
+        if (this.currentRadius >= this.maxRadius && !MDConfig.FLOOD.infiniteWaterExpansion) {
             this.setDead();
             return;
         }
@@ -48,10 +50,13 @@ public class EntityFlood extends Entity {
         BlockPos center = new BlockPos(this.posX, this.posY, this.posZ);
 
         if (!world.isRemote) {
-            updateRadialWave(center);
+            updateFlatFlood(center);
 
-            // Caja de colisión precisa basada en config
-            AxisAlignedBB expansionBox = this.getEntityBoundingBox().grow(1.0);
+            // Empuje de entidades dentro del área inundada
+            AxisAlignedBB expansionBox = new AxisAlignedBB(
+                    this.posX - this.currentRadius, this.posY, this.posZ - this.currentRadius,
+                    this.posX + this.currentRadius, this.posY + 1.5, this.posZ + this.currentRadius
+            );
 
             List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, expansionBox);
 
@@ -61,58 +66,40 @@ public class EntityFlood extends Entity {
                     double dz = e.posZ - this.posZ;
                     double dist = Math.sqrt(dx * dx + dz * dz);
 
-                    e.motionX = (dx / dist) * (this.speed * 1.5);
-                    e.motionY = 0.2;
-                    e.motionZ = (dz / dist) * (this.speed * 1.5);
-                    e.velocityChanged = true;
+                    if (dist > 0.001D) {
+                        e.motionX = (dx / dist) * (this.speed * 1.2);
+                        e.motionY = 0.05; // Leve flotación
+                        e.motionZ = (dz / dist) * (this.speed * 1.2);
+                        e.velocityChanged = true;
+                    }
                 }
             }
         } else {
-            // Partículas en 360 grados
-            for (int i = 0; i < 20; i++) {
+            // Partículas de salpicadura en el borde exterior
+            for (int i = 0; i < 10; i++) {
                 double angle = rand.nextDouble() * Math.PI * 2;
                 double px = this.posX + Math.cos(angle) * this.currentRadius;
                 double pz = this.posZ + Math.sin(angle) * this.currentRadius;
-                double py = this.posY + rand.nextDouble() * MDConfig.TSUNAMI.waveHeight;
 
-                world.spawnParticle(EnumParticleTypes.WATER_SPLASH, px, py, pz, Math.cos(angle) * 0.2, 0.1, Math.sin(angle) * 0.2);
+                world.spawnParticle(EnumParticleTypes.WATER_SPLASH, px, this.posY + 0.1, pz, Math.cos(angle) * 0.1, 0.05, Math.sin(angle) * 0.1);
             }
         }
     }
 
-    private void updateRadialWave(BlockPos center) {
-        int depth = MDConfig.TSUNAMI.waveDepth;
-        int height = MDConfig.TSUNAMI.waveHeight;
+    private void updateFlatFlood(BlockPos center) {
+        int r = (int) Math.ceil(this.currentRadius);
+        int targetY = center.getY(); // Mantener estricto el nivel Y base
 
-        int steps = Math.max(36, (int) (2 * Math.PI * this.currentRadius));
+        // Recorre únicamente el perímetro/anillo del radio actual
+        for (int x = -r; x <= r; x++) {
+            for (int z = -r; z <= r; z++) {
+                // Comprobación de círculo perfecto
+                if (x * x + z * z <= this.currentRadius * this.currentRadius) {
+                    BlockPos targetPos = new BlockPos(center.getX() + x, targetY, center.getZ() + z);
 
-        for (int i = 0; i < steps; i++) {
-            double angle = (2 * Math.PI / steps) * i;
-            double dirX = Math.cos(angle);
-            double dirZ = Math.sin(angle);
-
-            for (int d = 0; d < depth; d++) {
-                double r = this.currentRadius + d;
-                int x = (int) Math.round(r * dirX);
-                int z = (int) Math.round(r * dirZ);
-
-                for (int y = 0; y < height; y++) {
-                    BlockPos frontPos = center.add(x, y, z);
-                    if (world.isAirBlock(frontPos)) {
-                        world.setBlockState(frontPos, Blocks.LAVA.getDefaultState(), 3);
-                    }
-                }
-            }
-
-            double innerR = this.currentRadius - 1.0;
-            if (innerR > 0) {
-                int backX = (int) Math.round(innerR * dirX);
-                int backZ = (int) Math.round(innerR * dirZ);
-
-                for (int y = 0; y < height; y++) {
-                    BlockPos backPos = center.add(backX, y, backZ);
-                    if (world.getBlockState(backPos).getBlock() == Blocks.LAVA) {
-                        world.setBlockToAir(backPos);
+                    // Reemplaza solo si es aire o plantas/hierba en ese nivel exacto
+                    if (world.isAirBlock(targetPos) || world.getBlockState(targetPos).getBlock().isReplaceable(world, targetPos)) {
+                        world.setBlockState(targetPos, Blocks.WATER.getDefaultState(), 3);
                     }
                 }
             }

@@ -52,7 +52,7 @@ public class EntityTsunamiLava extends Entity {
             updateLavaWave(new BlockPos(this.posX, this.posY, this.posZ));
 
             // Caja de colisión precisa basada en config
-            AxisAlignedBB waterBoundingBox = new AxisAlignedBB(
+            AxisAlignedBB lavaBoundingBox = new AxisAlignedBB(
                     this.posX - (MDConfig.TSUNAMI.waveWidth / 2.0),
                     this.posY,
                     this.posZ - (MDConfig.TSUNAMI.waveDepth / 2.0),
@@ -61,7 +61,7 @@ public class EntityTsunamiLava extends Entity {
                     this.posZ + (MDConfig.TSUNAMI.waveDepth / 2.0)
             );
 
-            List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, waterBoundingBox);
+            List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, lavaBoundingBox);
 
             for (Entity e : entities) {
                 if (e != this) {
@@ -77,7 +77,7 @@ public class EntityTsunamiLava extends Entity {
                 double dy = posY + rand.nextDouble() * MDConfig.TSUNAMI.waveHeight;
                 double dz = posZ + (rand.nextDouble() - 0.5) * MDConfig.TSUNAMI.waveWidth;
 
-                world.spawnParticle(EnumParticleTypes.WATER_SPLASH, dx, dy, dz, 0, 0.2, 0);
+                world.spawnParticle(EnumParticleTypes.DRIP_LAVA, dx, dy, dz, 0, 0.2, 0);
             }
         }
     }

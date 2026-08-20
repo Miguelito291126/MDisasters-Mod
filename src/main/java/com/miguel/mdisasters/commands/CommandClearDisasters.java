@@ -1,8 +1,6 @@
 package com.miguel.mdisasters.commands;
 
-import com.miguel.mdisasters.objects.entities.EntityMeteor;
-import com.miguel.mdisasters.objects.entities.EntityTornado;
-import com.miguel.mdisasters.objects.entities.EntityTsunami;
+import com.miguel.mdisasters.init.InitEntities;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -39,33 +37,33 @@ public class CommandClearDisasters extends CommandBase {
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         World world = sender.getEntityWorld();
 
-        // Validar si el argumento es "clear"
         if (args.length > 0 && args[0].equalsIgnoreCase("clear")) {
             if (!world.isRemote) {
+                // Clonamos la lista para iterar sin conflictos de modificación concurrente
+                List<Entity> entitiesToRemove = new ArrayList<>(InitEntities.ENTITIES);
                 int count = 0;
 
-                List<Entity> loadedEntities = new ArrayList<>(world.loadedEntityList);
-
-                for (Entity entity : loadedEntities) {
-                    if (entity instanceof EntityTsunami || entity instanceof EntityTornado || entity instanceof EntityMeteor) {
+                for (Entity entity : entitiesToRemove) {
+                    if (entity != null && entity.isEntityAlive()) {
                         entity.setDead();
                         count++;
                     }
                 }
+
+                // Limpiamos la lista global al terminar el recorrido
+                InitEntities.ENTITIES.clear();
 
                 TextComponentString message = new TextComponentString(count + " disasters have been eliminated from the world.");
                 message.getStyle().setColor(TextFormatting.GREEN);
                 sender.sendMessage(message);
             }
         } else {
-            // Mensaje de uso en caso de escribir mal el subcomando
             TextComponentString usage = new TextComponentString("Correct usage: /mdisasters clear");
             usage.getStyle().setColor(TextFormatting.RED);
             sender.sendMessage(usage);
         }
     }
 
-    // Opcional: Autocompletar el subcomando "clear" con la tecla TAB
     @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
         if (args.length == 1) {
