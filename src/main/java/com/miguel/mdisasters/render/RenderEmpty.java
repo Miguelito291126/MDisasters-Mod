@@ -11,11 +11,17 @@ public class RenderEmpty<T extends Entity> extends Render<T> {
 
     public RenderEmpty(RenderManager renderManager) {
         super(renderManager);
+        this.shadowSize = 0.0F; // Desactiva la sombra en el suelo
     }
 
     @Override
     public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks) {
-        // No renderiza ningún modelo ni textura
+        // Al NO llamar a super.doRender(), evitas que Minecraft dibuje el fuego, las etiquetas de texto o las sombras
+    }
+
+    @Override
+    protected boolean canRenderName(T entity) {
+        return false; // Desactiva el renderizado de nombres si la entidad tuviera uno
     }
 
     @Nullable

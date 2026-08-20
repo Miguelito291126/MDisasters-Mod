@@ -1,7 +1,5 @@
 package com.miguel.mdisasters.proxy;
-import com.miguel.mdisasters.objects.entities.EntityMeteor;
-import com.miguel.mdisasters.objects.entities.EntityTornado;
-import com.miguel.mdisasters.objects.entities.EntityTsunami;
+import com.miguel.mdisasters.objects.entities.*;
 import com.miguel.mdisasters.render.RenderEmpty;
 import com.miguel.mdisasters.render.RenderMeteor;
 import com.miguel.mdisasters.render.RenderTornado;
@@ -18,5 +16,8 @@ public class ClientProxy extends CommonProxy {
         RenderingRegistry.registerEntityRenderingHandler(EntityMeteor.class, RenderMeteor::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityTornado.class, RenderTornado::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityTsunami.class, RenderEmpty::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityTsunamiLava.class, RenderEmpty::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityFlood.class, RenderEmpty::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityEarthquake.class, RenderEmpty::new);
     }
 }

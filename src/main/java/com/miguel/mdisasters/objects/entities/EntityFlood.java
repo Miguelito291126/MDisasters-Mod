@@ -3,14 +3,12 @@ package com.miguel.mdisasters.objects.entities;
 import com.miguel.mdisasters.config.MDConfig;
 import com.miguel.mdisasters.init.InitEntities;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 import java.util.List;
