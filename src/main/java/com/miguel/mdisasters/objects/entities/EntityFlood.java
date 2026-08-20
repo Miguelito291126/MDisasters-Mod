@@ -9,6 +9,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -27,8 +28,12 @@ public class EntityFlood extends Entity {
 
     public EntityFlood(World world, EntityPlayer player) {
         this(world);
-        // Fija la posición exacta de origen (A nivel de los pies del jugador)
-        this.setPosition(player.posX, player.posY, player.posZ);
+        // Centrar perfectamente en el bloque (evita desviaciones por decimales)
+        int blockX = MathHelper.floor(player.posX);
+        int blockY = MathHelper.floor(player.posY);
+        int blockZ = MathHelper.floor(player.posZ);
+
+        this.setPosition(blockX + 0.5D, blockY, blockZ + 0.5D);
     }
 
     @Override
@@ -37,10 +42,13 @@ public class EntityFlood extends Entity {
     @Override
     public void onUpdate() {
         super.onUpdate();
-        this.currentRadius += this.speed;
 
-        float currentSize = (float) this.currentRadius * 2;
-        this.setSize(currentSize, 1.0f);
+        // Congelar posición física para asegurar simetría
+        this.motionX = 0;
+        this.motionY = 0;
+        this.motionZ = 0;
+
+        this.currentRadius += this.speed;
 
         if (this.currentRadius >= this.maxRadius && !MDConfig.FLOOD.infiniteWaterExpansion) {
             this.setDead();
@@ -52,7 +60,7 @@ public class EntityFlood extends Entity {
         if (!world.isRemote) {
             updateFlatFlood(center);
 
-            // Empuje de entidades dentro del área inundada
+            // Empuje de entidades simétrico
             AxisAlignedBB expansionBox = new AxisAlignedBB(
                     this.posX - this.currentRadius, this.posY, this.posZ - this.currentRadius,
                     this.posX + this.currentRadius, this.posY + 1.5, this.posZ + this.currentRadius
@@ -68,14 +76,13 @@ public class EntityFlood extends Entity {
 
                     if (dist > 0.001D) {
                         e.motionX = (dx / dist) * (this.speed * 1.2);
-                        e.motionY = 0.05; // Leve flotación
+                        e.motionY = 0.05;
                         e.motionZ = (dz / dist) * (this.speed * 1.2);
                         e.velocityChanged = true;
                     }
                 }
             }
         } else {
-            // Partículas de salpicadura en el borde exterior
             for (int i = 0; i < 10; i++) {
                 double angle = rand.nextDouble() * Math.PI * 2;
                 double px = this.posX + Math.cos(angle) * this.currentRadius;
@@ -93,17 +100,14 @@ public class EntityFlood extends Entity {
         double innerRadiusSq = Math.max(0, (this.currentRadius - 1.5) * (this.currentRadius - 1.5));
         double outerRadiusSq = this.currentRadius * this.currentRadius;
 
-        // Solo recorremos el área cercana al borde de la circunferencia actual
         for (int x = -r; x <= r; x++) {
             for (int z = -r; z <= r; z++) {
                 double distSq = x * x + z * z;
 
-                // Solo coloca bloques si está DENTRO del borde del radio actual (evita rellenar el centro)
                 if (distSq >= innerRadiusSq && distSq <= outerRadiusSq) {
-                    BlockPos targetPos = new BlockPos(center.getX() + x, targetY, center.getZ() + z);
+                    BlockPos targetPos = center.add(x, 0, z);
 
                     if (world.isAirBlock(targetPos) || world.getBlockState(targetPos).getBlock().isReplaceable(world, targetPos)) {
-                        // Flag 2: Actualiza el cliente SIN notificar a los bloques vecinos (evita la física de agua nativa)
                         world.setBlockState(targetPos, Blocks.WATER.getDefaultState(), 2);
                     }
                 }
