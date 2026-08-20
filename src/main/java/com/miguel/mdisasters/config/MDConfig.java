@@ -33,7 +33,7 @@ public class MDConfig {
 
         @Config.Comment("Altura de la ola de agua en bloques")
         @Config.RangeInt(min = 1, max = 50)
-        public int waveHeight = 40;
+        public int waveHeight = 10;
 
         @Config.Comment("Grosor/Fondo de la ola")
         @Config.RangeInt(min = 1, max = 10)
