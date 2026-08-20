@@ -70,15 +70,19 @@ public class EntityFlood extends Entity {
 
             for (Entity e : entities) {
                 if (e != this) {
-                    double dx = e.posX - this.posX;
-                    double dz = e.posZ - this.posZ;
-                    double dist = Math.sqrt(dx * dx + dz * dz);
+                    boolean isFlying = (e instanceof EntityPlayer) && ((EntityPlayer) e).capabilities.isFlying;
+                    if (!isFlying) {
+                        double dx = e.posX - this.posX;
+                        double dz = e.posZ - this.posZ;
+                        double dist = Math.sqrt(dx * dx + dz * dz);
 
-                    if (dist > 0.001D) {
-                        e.motionX = (dx / dist) * (this.speed * 1.2);
-                        e.motionY = 0.05;
-                        e.motionZ = (dz / dist) * (this.speed * 1.2);
-                        e.velocityChanged = true;
+                        if (dist > 0.001D) {
+                            e.motionX = (dx / dist) * (this.speed * 1.2);
+                            e.motionY = 0.05;
+                            e.motionZ = (dz / dist) * (this.speed * 1.2);
+                            e.velocityChanged = true;
+                        }
+
                     }
                 }
             }

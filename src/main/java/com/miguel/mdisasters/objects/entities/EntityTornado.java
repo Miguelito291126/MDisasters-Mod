@@ -53,17 +53,20 @@ public class EntityTornado extends Entity {
 
             for (Entity e : list) {
                 if (e != this) {
-                    // Corregido: Atraer HACIA el centro del tornado
-                    double dx = posX - e.posX;
-                    double dz = posZ - e.posZ;
-                    double dist = Math.max(0.1, Math.sqrt(dx * dx + dz * dz));
+                    boolean isFlying = (e instanceof EntityPlayer) && ((EntityPlayer) e).capabilities.isFlying;
+                    if (!isFlying) {
+                        // Corregido: Atraer HACIA el centro del tornado
+                        double dx = posX - e.posX;
+                        double dz = posZ - e.posZ;
+                        double dist = Math.max(0.1, Math.sqrt(dx * dx + dz * dz));
 
-                    // Tirón hacia el vórtice
-                    e.motionX += (dx / dist) * 0.15;
-                    e.motionY = 0.35;
-                    e.motionZ += (dz / dist) * 0.15;
+                        // Tirón hacia el vórtice
+                        e.motionX += (dx / dist) * 0.15;
+                        e.motionY = 0.35;
+                        e.motionZ += (dz / dist) * 0.15;
 
-                    e.velocityChanged = true;
+                        e.velocityChanged = true;
+                    }
                 }
             }
 

@@ -65,10 +65,13 @@ public class EntityTsunamiLava extends Entity {
 
             for (Entity e : entities) {
                 if (e != this) {
-                    e.motionX = this.motionX * 2.0;
-                    e.motionY = 0.25;
-                    e.motionZ = this.motionZ * 2.0;
-                    e.velocityChanged = true;
+                    boolean isFlying = (e instanceof EntityPlayer) && ((EntityPlayer) e).capabilities.isFlying;
+                    if (!isFlying) {
+                        e.motionX = this.motionX * 2.0;
+                        e.motionY = 0.25;
+                        e.motionZ = this.motionZ * 2.0;
+                        e.velocityChanged = true;
+                    }
                 }
             }
         } else {

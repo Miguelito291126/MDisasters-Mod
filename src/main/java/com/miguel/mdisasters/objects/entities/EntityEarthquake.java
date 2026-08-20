@@ -21,6 +21,7 @@ public class EntityEarthquake extends Entity {
     public double currentRadius = 1.0;
     public double maxRadius = MDConfig.EARTHQUAKE.earthquakeMaxRadius; // Radio máximo de la grieta
     public int duration = MDConfig.EARTHQUAKE.earthquakeDuration; // Duración en ticks (10 segundos)
+    double magnitude = MDConfig.EARTHQUAKE.earthquakeMagnitude;
 
     public EntityEarthquake(World world) {
         super(world);
@@ -46,7 +47,6 @@ public class EntityEarthquake extends Entity {
             return;
         }
 
-        // Expandir el radio del terremoto progresivamente
         if (this.currentRadius < this.maxRadius) {
             this.currentRadius += 0.5;
         }
@@ -54,24 +54,27 @@ public class EntityEarthquake extends Entity {
         BlockPos center = new BlockPos(this.posX, this.posY, this.posZ);
 
         if (!world.isRemote) {
-            // 1. Romper el suelo creando grietas subterráneas
             generateFissure(center);
 
-            // 2. Sacudir y dañar entidades en el área del terremoto
             AxisAlignedBB affectArea = new AxisAlignedBB(center).grow(this.currentRadius, 10, this.currentRadius);
             List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, affectArea);
+            double shakeForce = (this.magnitude / 10.0D) * 0.6D;
 
             for (Entity e : entities) {
                 if (e != this) {
-                    // Temblor en el movimiento del jugador/mobs
-                    e.motionX += (rand.nextDouble() - 0.5) * 0.4;
-                    e.motionZ += (rand.nextDouble() - 0.5) * 0.4;
+                    boolean isFlying = (e instanceof EntityPlayer) && ((EntityPlayer) e).capabilities.isFlying;
+                    if (e.onGround && !isFlying) {
+                        // Temblor en el movimiento del jugador/mobs
+                        e.motionX += (rand.nextDouble() - 0.5) * shakeForce;
+                        e.motionZ += (rand.nextDouble() - 0.5) * shakeForce;
 
-                    if (e.onGround && rand.nextInt(5) == 0) {
-                        e.motionY = 0.25; // Pequeño salto por el impacto sísmico
+                        if (rand.nextInt(4) == 0) {
+                            e.motionY = 0.15D + (shakeForce * 0.3D); // Salto/rebote sísmico
+                        }
+                        e.velocityChanged = true;
                     }
-                    e.velocityChanged = true;
                 }
+
             }
         } else {
             // 3. Efectos visuales de partículas cayendo y saliendo de la tierra
@@ -80,28 +83,31 @@ public class EntityEarthquake extends Entity {
     }
 
     private void generateFissure(BlockPos center) {
-        // Generar grietas en varias direcciones (líneas que se ramifican)
-        int lines = 5; // Número de grietas principales
+        // La magnitud define cuántas ramificaciones principales se forman (mínimo 3, máximo 12)
+        int lines = Math.max(3, (int) Math.round(this.magnitude * 1.2D));
+
         for (int l = 0; l < lines; l++) {
-            double angle = (Math.PI * 2 / lines) * l + (rand.nextDouble() * 0.2);
+            double angle = (Math.PI * 2 / lines) * l + (rand.nextDouble() * 0.15D);
             double dirX = Math.cos(angle);
             double dirZ = Math.sin(angle);
 
-            for (double r = 1; r <= this.currentRadius; r += 1.0) {
+            for (double r = 1; r <= this.currentRadius; r += 1.0D) {
                 int x = (int) Math.round(r * dirX);
                 int z = (int) Math.round(r * dirZ);
 
                 BlockPos groundPos = world.getTopSolidOrLiquidBlock(center.add(x, 0, z)).down();
 
-                // Destruir bloques hacia abajo para crear una grieta profunda
-                int depth = 4 + rand.nextInt(6);
+                // Profundidad de la grieta escalada por la magnitud
+                int baseDepth = (int) Math.round(this.magnitude * 1.5D);
+                int depth = Math.max(3, baseDepth + rand.nextInt(4));
+
                 for (int y = 0; y < depth; y++) {
                     BlockPos target = groundPos.down(y);
                     IBlockState state = world.getBlockState(target);
 
                     if (state.getBlock() != Blocks.BEDROCK && state.getBlock() != Blocks.AIR) {
-                        // Reemplazar la capa superior por aire o magma/lava en el fondo
-                        if (y == depth - 1 && rand.nextBoolean()) {
+                        // En la capa más profunda hay probabilidad de lava según magnitud
+                        if (y == depth - 1 && rand.nextDouble() < (this.magnitude / 10.0D) * 0.3D) {
                             world.setBlockState(target, Blocks.LAVA.getDefaultState(), 3);
                         } else {
                             world.setBlockToAir(target);
@@ -113,7 +119,9 @@ public class EntityEarthquake extends Entity {
     }
 
     private void spawnQuakeParticles(BlockPos center) {
-        for (int i = 0; i < 15; i++) {
+        int particleCount = (int) (10 + (this.magnitude * 3));
+
+        for (int i = 0; i < particleCount; i++) {
             double angle = rand.nextDouble() * Math.PI * 2;
             double dist = rand.nextDouble() * this.currentRadius;
 
@@ -124,12 +132,14 @@ public class EntityEarthquake extends Entity {
             IBlockState state = world.getBlockState(top.down());
             int blockId = Block.getStateId(state);
 
-            // Generar partículas del bloque del suelo rompiéndose
-            world.spawnParticle(EnumParticleTypes.BLOCK_CRACK, px, top.getY() + 0.1, pz,
-                    (rand.nextDouble() - 0.5) * 0.2, 0.1, (rand.nextDouble() - 0.5) * 0.2, blockId);
+            if (blockId != 0) {
+                // Partículas del bloque rompiéndose
+                world.spawnParticle(EnumParticleTypes.BLOCK_CRACK, px, top.getY() + 0.1D, pz,
+                        (rand.nextDouble() - 0.5D) * 0.2D, 0.1D, (rand.nextDouble() - 0.5D) * 0.2D, blockId);
+            }
 
-            if (rand.nextInt(3) == 0) {
-                world.spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, px, top.getY(), pz, 0, 0.05, 0);
+            if (rand.nextInt(4) == 0) {
+                world.spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, px, top.getY(), pz, 0, 0.05D, 0);
             }
         }
     }
