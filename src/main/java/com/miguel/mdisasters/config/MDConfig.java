@@ -55,6 +55,10 @@ public class MDConfig {
         @Config.RangeDouble(min = 0.0, max = 200.0)
         public double maxSpeed = 0.4;
 
+        @Config.Comment("Tiempo que dura el tornado (en ticks: 20 ticks = 1 segundo)")
+        @Config.RangeInt(min = 20, max = 72000) // Se ajustó el límite máximo
+        public int tornadoDuration = 600;
+
         @Config.Comment("Altura del tornado en bloques")
         @Config.RangeInt(min = 5, max = 150)
         public int tornadoHeight = 30;
