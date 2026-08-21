@@ -48,6 +48,7 @@ public class EntityTornado extends Entity {
     @Override
     public void onUpdate() {
         super.onUpdate();
+
         if (this.ticksExisted > MDConfig.TORNADO.tornadoDuration) {
             this.setDead();
             return;
