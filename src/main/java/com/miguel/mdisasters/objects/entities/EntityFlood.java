@@ -87,19 +87,23 @@ public class EntityFlood extends Entity {
                 }
             }
         } else {
-            for (int i = 0; i < 10; i++) {
-                double angle = rand.nextDouble() * Math.PI * 2;
-                double px = this.posX + Math.cos(angle) * this.currentRadius;
-                double pz = this.posZ + Math.sin(angle) * this.currentRadius;
+            spawnWaterParticles();
+        }
+    }
 
-                world.spawnParticle(EnumParticleTypes.WATER_SPLASH, px, this.posY + 0.1, pz, Math.cos(angle) * 0.1, 0.05, Math.sin(angle) * 0.1);
-            }
+    private void spawnWaterParticles()
+    {
+        for (int i = 0; i < 10; i++) {
+            double angle = rand.nextDouble() * Math.PI * 2;
+            double px = this.posX + Math.cos(angle) * this.currentRadius;
+            double pz = this.posZ + Math.sin(angle) * this.currentRadius;
+
+            world.spawnParticle(EnumParticleTypes.WATER_SPLASH, px, this.posY + 0.1, pz, Math.cos(angle) * 0.1, 0.05, Math.sin(angle) * 0.1);
         }
     }
 
     private void updateFlatFlood(BlockPos center) {
         int r = (int) Math.ceil(this.currentRadius);
-        int targetY = center.getY();
 
         double innerRadiusSq = Math.max(0, (this.currentRadius - 1.5) * (this.currentRadius - 1.5));
         double outerRadiusSq = this.currentRadius * this.currentRadius;

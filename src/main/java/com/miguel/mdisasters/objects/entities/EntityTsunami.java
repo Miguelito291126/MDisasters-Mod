@@ -75,13 +75,18 @@ public class EntityTsunami extends Entity {
                 }
             }
         } else {
-            for (int i = 0; i < 12; i++) {
-                double dx = posX + (rand.nextDouble() - 0.5) * MDConfig.TSUNAMI.waveWidth;
-                double dy = posY + rand.nextDouble() * MDConfig.TSUNAMI.waveHeight;
-                double dz = posZ + (rand.nextDouble() - 0.5) * MDConfig.TSUNAMI.waveWidth;
+            spawnWaterParticles();
+        }
+    }
 
-                world.spawnParticle(EnumParticleTypes.WATER_SPLASH, dx, dy, dz, 0, 0.2, 0);
-            }
+    private void spawnWaterParticles()
+    {
+        for (int i = 0; i < 12; i++) {
+            double dx = posX + (rand.nextDouble() - 0.5) * MDConfig.TSUNAMI.waveWidth;
+            double dy = posY + rand.nextDouble() * MDConfig.TSUNAMI.waveHeight;
+            double dz = posZ + (rand.nextDouble() - 0.5) * MDConfig.TSUNAMI.waveWidth;
+
+            world.spawnParticle(EnumParticleTypes.WATER_SPLASH, dx, dy, dz, 0, 0.2, 0);
         }
     }
 

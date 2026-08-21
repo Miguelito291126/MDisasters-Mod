@@ -1,16 +1,18 @@
 package com.miguel.mdisasters.registry;
 
-import com.miguel.mdisasters.MDMain; // Ajusta a tu clase principal donde tengas MOD_ID
+import com.miguel.mdisasters.MDMain;
 import com.miguel.mdisasters.init.InitBlocks;
 import com.miguel.mdisasters.init.InitEntities;
 import com.miguel.mdisasters.init.InitItems;
+import com.miguel.mdisasters.init.InitSounds;
 import com.miguel.mdisasters.objects.entities.*;
+import com.miguel.mdisasters.render.RenderEmpty;
 import com.miguel.mdisasters.render.RenderMeteor;
 import com.miguel.mdisasters.render.RenderTornado;
-import com.miguel.mdisasters.render.RenderTsunami;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
+import net.minecraft.util.SoundEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
@@ -47,6 +49,17 @@ public class RegistryHandler {
             InitEntities.registerEntity("flood", EntityFlood.class, 256, 3, true);
             InitEntities.registerEntity("earthquake", EntityEarthquake.class, 256, 3, true);
         }
+
+        @SubscribeEvent
+        public static void registerSounds(RegistryEvent.Register<SoundEvent> event) {
+            InitSounds.EARTHQUAKE = InitSounds.registerSound("earthquake");
+            InitSounds.TORNADO = InitSounds.registerSound("tornado");
+
+            InitSounds.SOUNDS.add(InitSounds.EARTHQUAKE);
+            InitSounds.SOUNDS.add(InitSounds.TORNADO);
+
+            event.getRegistry().registerAll(InitSounds.SOUNDS.toArray(new SoundEvent[0]));
+        }
     }
 
     @Mod.EventBusSubscriber(modid = MDMain.MODID, value = Side.CLIENT)
@@ -55,6 +68,7 @@ public class RegistryHandler {
         @SubscribeEvent
         @SideOnly(Side.CLIENT)
         public static void onModelRegister(ModelRegistryEvent event) {
+            // Modelos de Items
             for (Item item : InitItems.ITEMS) {
                 ModelLoader.setCustomModelResourceLocation(
                         item,
@@ -63,7 +77,7 @@ public class RegistryHandler {
                 );
             }
 
-            // Registro de modelos de bloques
+            // Modelos de Bloques
             for (Block block : InitBlocks.BLOCKS) {
                 Item blockItem = Item.getItemFromBlock(block);
                 if (blockItem != null && blockItem.getRegistryName() != null) {
@@ -74,6 +88,14 @@ public class RegistryHandler {
                     );
                 }
             }
+
+            // Renderizado de Entidades
+            RenderingRegistry.registerEntityRenderingHandler(EntityMeteor.class, RenderMeteor::new);
+            RenderingRegistry.registerEntityRenderingHandler(EntityTornado.class, RenderTornado::new);
+            RenderingRegistry.registerEntityRenderingHandler(EntityTsunami.class, RenderEmpty::new);
+            RenderingRegistry.registerEntityRenderingHandler(EntityTsunamiLava.class, RenderEmpty::new);
+            RenderingRegistry.registerEntityRenderingHandler(EntityFlood.class, RenderEmpty::new);
+            RenderingRegistry.registerEntityRenderingHandler(EntityEarthquake.class, RenderEmpty::new);
         }
     }
 }

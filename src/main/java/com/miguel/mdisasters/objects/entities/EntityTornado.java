@@ -2,14 +2,22 @@ package com.miguel.mdisasters.objects.entities;
 
 import com.miguel.mdisasters.config.MDConfig;
 import com.miguel.mdisasters.init.InitEntities;
+import com.miguel.mdisasters.init.InitSounds;
+import com.miguel.mdisasters.sounds.SoundTornado;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
@@ -40,11 +48,10 @@ public class EntityTornado extends Entity {
     @Override
     public void onUpdate() {
         super.onUpdate();
+        BlockPos currentPos = new BlockPos(this.posX, this.posY, this.posZ);
+        BlockPos groundPos = world.getHeight(currentPos);
 
         if (!world.isRemote) {
-            BlockPos currentPos = new BlockPos(this.posX, this.posY, this.posZ);
-            BlockPos groundPos = world.getHeight(currentPos);
-
             this.setPosition(this.posX, groundPos.getY(), this.posZ);
 
             // Usa la configuración para el radio de succión
@@ -81,36 +88,59 @@ public class EntityTornado extends Entity {
 
             this.move(MoverType.SELF, this.motionX, 0, this.motionZ);
         } else {
-            // Renderizado de partículas adaptado a la anchura de la config
-            double radioBase = 1.0;
-            double radioMaximo = MDConfig.TORNADO.tornadoWidth / 2.0;
+            spawnDustCloudParticles(currentPos);
 
-            for (int i = 0; i < 60; i++) {
-                double progresoAltura = rand.nextDouble();
-                double dy = posY + (progresoAltura * height);
+            if (this.ticksExisted == 1) {
+                playTornadoSound();
+            }
 
-                double radioActual = radioBase + (Math.pow(progresoAltura, 1.5) * (radioMaximo - radioBase));
+        }
+    }
 
-                double angulo = rand.nextDouble() * Math.PI * 2;
+    @SideOnly(Side.CLIENT)
+    private void playTornadoSound() {
+        Minecraft.getMinecraft().getSoundHandler().playSound(new SoundTornado(this));
+    }
 
-                double dx = posX + Math.cos(angulo) * radioActual;
-                double dz = posZ + Math.sin(angulo) * radioActual;
+    private void spawnDustCloudParticles(BlockPos center) {
+        int particleCount = 15; // Cantidad de partículas por tick
 
-                double velocidadGiro = 0.4 + (progresoAltura * 0.2);
+        for (int i = 0; i < particleCount; i++) {
+            // 1. Calcular una posición circular alrededor del centro del tornado
+            double angle = rand.nextDouble() * Math.PI * 2;
+            double radius = 1.0D + (rand.nextDouble() * MDConfig.TORNADO.tornadoWidth); // Radio dinámico
 
-                double motX = -Math.sin(angulo) * velocidadGiro;
-                double motZ = Math.cos(angulo) * velocidadGiro;
+            double px = this.posX + Math.cos(angle) * radius;
+            double pz = this.posZ + Math.sin(angle) * radius;
 
-                double atraccionCentro = 0.05;
-                motX -= Math.cos(angulo) * atraccionCentro;
-                motZ -= Math.sin(angulo) * atraccionCentro;
+            // 2. Obtener la altura exacta del suelo en esa posición (X, Z)
+            BlockPos surfacePos = world.getTopSolidOrLiquidBlock(new BlockPos(px, 0, pz));
+            double py = surfacePos.getY() + 0.1D; // Ligeramente por encima del bloque para evitar parpadeos
 
-                double motY = 0.15 + (rand.nextDouble() * 0.1);
+            // 3. Obtener el bloque del suelo para usar sus partículas reales de rotura/polvo
+            IBlockState state = world.getBlockState(surfacePos.down());
+            int blockId = Block.getStateId(state);
 
+            // 4. Velocidad tangencial/giratoria pegada al suelo
+            double vx = -Math.sin(angle) * 0.3D;
+            double vz = Math.cos(angle) * 0.3D;
+
+            if (blockId != 0) {
+                // Partículas del propio terreno (tierra, piedra, césped)
                 world.spawnParticle(
-                        EnumParticleTypes.CLOUD,
-                        dx, dy, dz,
-                        motX, motY, motZ
+                        EnumParticleTypes.BLOCK_CRACK,
+                        px, py, pz,
+                        vx, 0.01D, vz, // Velocidad Y casi nula (0.01) para que no vuelen
+                        blockId
+                );
+            }
+
+            // Humo/Polvo denso raspando el suelo
+            if (rand.nextBoolean()) {
+                world.spawnParticle(
+                        EnumParticleTypes.SMOKE_LARGE,
+                        px, py, pz,
+                        vx * 0.5D, 0.0D, vz * 0.5D
                 );
             }
         }

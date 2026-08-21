@@ -1,0 +1,14 @@
+{
+  "earthquake": {
+    "category": "ambient",
+    "sounds": [
+      "mdisasters:earthquake"
+    ]
+  },
+  "tornado": {
+    "category": "weather",
+    "sounds": [
+      "mdisasters:tornado"
+    ]
+  }
+}

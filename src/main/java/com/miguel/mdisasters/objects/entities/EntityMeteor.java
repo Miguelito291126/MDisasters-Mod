@@ -48,20 +48,25 @@ public class EntityMeteor extends Entity {
                 this.setDead();
             }
         } else {
-            // Partículas de fuego y humo denso en el cliente
-            for (int i = 0; i < 6; i++) {
-                double px = posX + (rand.nextDouble() - 0.5) * width;
-                double py = posY + rand.nextDouble() * height;
-                double pz = posZ + (rand.nextDouble() - 0.5) * width;
-
-                world.spawnParticle(EnumParticleTypes.FLAME, px, py, pz, 0, 0.05, 0);
-                world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, px, py, pz, 0, 0.05, 0);
-            }
+            spawnMeteorParticles();
         }
 
         // Muerte de seguridad tras 20 segundos
         if (this.ticksExisted > 400) {
             this.setDead();
+        }
+    }
+
+    private void spawnMeteorParticles()
+    {
+        // Partículas de fuego y humo denso en el cliente
+        for (int i = 0; i < 6; i++) {
+            double px = posX + (rand.nextDouble() - 0.5) * width;
+            double py = posY + rand.nextDouble() * height;
+            double pz = posZ + (rand.nextDouble() - 0.5) * width;
+
+            world.spawnParticle(EnumParticleTypes.FLAME, px, py, pz, 0, 0.05, 0);
+            world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, px, py, pz, 0, 0.05, 0);
         }
     }
 

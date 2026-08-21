@@ -2,19 +2,27 @@ package com.miguel.mdisasters.objects.entities;
 
 import com.miguel.mdisasters.config.MDConfig;
 import com.miguel.mdisasters.init.InitEntities;
+import com.miguel.mdisasters.init.InitSounds;
+import com.miguel.mdisasters.sounds.SoundEarthquake;
 import jdk.nashorn.internal.runtime.regexp.joni.Config;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
+
+import static com.miguel.mdisasters.init.InitSounds.EARTHQUAKE;
 
 public class EntityEarthquake extends Entity {
 
@@ -55,7 +63,6 @@ public class EntityEarthquake extends Entity {
 
         if (!world.isRemote) {
             generateFissure(center);
-
             AxisAlignedBB affectArea = new AxisAlignedBB(center).grow(this.currentRadius, 10, this.currentRadius);
             List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, affectArea);
             double shakeForce = (this.magnitude / 10.0D) * 0.6D;
@@ -79,6 +86,10 @@ public class EntityEarthquake extends Entity {
         } else {
             // 3. Efectos visuales de partículas cayendo y saliendo de la tierra
             spawnQuakeParticles(center);
+            // Iniciar el sonido en bucle solo en el primer tick
+            if (this.ticksExisted == 1) {
+                playEarthquakeSound();
+            }
         }
     }
 
@@ -142,6 +153,11 @@ public class EntityEarthquake extends Entity {
                 world.spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, px, top.getY(), pz, 0, 0.05D, 0);
             }
         }
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void playEarthquakeSound() {
+        Minecraft.getMinecraft().getSoundHandler().playSound(new SoundEarthquake(this));
     }
 
     @Override

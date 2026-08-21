@@ -53,7 +53,7 @@ public class DisasterSpawnerHandler {
 
         BlockPos targetPos = world.getTopSolidOrLiquidBlock(new BlockPos(spawnX, 0, spawnZ));
 
-        int disasterType = RAND.nextInt(3);
+        int disasterType = RAND.nextInt(5);
 
         switch (disasterType) {
             case 0:
@@ -94,6 +94,14 @@ public class DisasterSpawnerHandler {
                 world.spawnEntity(earthquake);
 
                 sendDisasterAlert(player, "A earthquake is appear!", TextFormatting.DARK_RED);
+                break;
+
+            case 5:
+                EntityTsunamiLava lava_tsunami = new EntityTsunamiLava(world, player);
+                lava_tsunami.setPosition(spawnX, targetPos.getY(), spawnZ);
+                world.spawnEntity(lava_tsunami);
+
+                sendDisasterAlert(player, "A earthquake is appear!", TextFormatting.GOLD);
                 break;
         }
     }
