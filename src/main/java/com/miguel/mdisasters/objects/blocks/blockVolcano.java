@@ -32,5 +32,19 @@ public class blockVolcano extends Block {
         this.setHarvestLevel("pickaxe", 0); // Requiere pico para ser minado
 
         InitBlocks.BLOCKS.add(this);
+
+        this.setTickRandomly(true);
+    }
+
+    @Override
+    public void onEntityWalk(World worldIn, BlockPos pos, Entity entityIn) {
+        // Verificar que la entidad no sea inmune al fuego (como los Blazes o Magma Cubes)
+        // y que no tenga el encantamiento de Paso Helado (Frost Walker) o botas de protección si quieres añadir filtros
+        if (!entityIn.isImmuneToFire() && entityIn instanceof EntityLivingBase) {
+            // Aplica daño de fuego/quemadura
+            entityIn.attackEntityFrom(DamageSource.HOT_FLOOR, 1.0F); // 1.0F equivale a medio corazón de daño
+        }
+
+        super.onEntityWalk(worldIn, pos, entityIn);
     }
 }
