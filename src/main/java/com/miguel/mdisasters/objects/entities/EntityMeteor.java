@@ -17,14 +17,11 @@ public class EntityMeteor extends Entity {
 
     public EntityMeteor(World world) {
         super(world);
-        // Corregido: Usar meteorWidth en lugar de meteorWeight
         this.setSize(MDConfig.METEOR.meteorWidth, MDConfig.METEOR.meteorHeight);
         this.motionY = -speed;
-        InitEntities.ENTITIES.add(this);
-    }
+        this.isImmuneToFire = true;
 
-    public EntityMeteor(World world, EntityPlayer player) {
-        this(world);
+        InitEntities.ENTITIES.add(this);
     }
 
     @Override
@@ -111,7 +108,8 @@ public class EntityMeteor extends Entity {
     protected void readEntityFromNBT(NBTTagCompound compound) {
         if (compound.hasKey("Speed")) {
             this.speed = compound.getDouble("Speed");
-        } else {
+        }
+        else {
             this.speed = MDConfig.METEOR.speed;
         }
     }
@@ -122,10 +120,12 @@ public class EntityMeteor extends Entity {
     }
 
     public double getSpeed() {
+
         return speed;
     }
 
     public void setSpeed(double speed) {
+
         this.speed = speed;
     }
 }

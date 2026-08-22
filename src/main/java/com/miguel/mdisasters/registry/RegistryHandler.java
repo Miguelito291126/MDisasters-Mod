@@ -42,12 +42,13 @@ public class RegistryHandler {
 
         @SubscribeEvent
         public static void onEntityRegister(RegistryEvent.Register<EntityEntry> event) {
-            InitEntities.registerEntity("meteor", EntityMeteor.class, 160, 3, true);
+            InitEntities.registerEntity("meteor", EntityMeteor.class, 256, 3, true);
             InitEntities.registerEntity("tornado", EntityTornado.class, 256, 3, true);
             InitEntities.registerEntity("tsunami", EntityTsunami.class, 256, 3, true);
             InitEntities.registerEntity("tsunami_lava", EntityTsunamiLava.class, 256, 3, true);
             InitEntities.registerEntity("flood", EntityFlood.class, 256, 3, true);
             InitEntities.registerEntity("earthquake", EntityEarthquake.class, 256, 3, true);
+            InitEntities.registerEntity("volcano", EntityVolcano.class, 256, 3, true);
         }
 
         @SubscribeEvent
@@ -96,6 +97,7 @@ public class RegistryHandler {
             RenderingRegistry.registerEntityRenderingHandler(EntityTsunamiLava.class, RenderEmpty::new);
             RenderingRegistry.registerEntityRenderingHandler(EntityFlood.class, RenderEmpty::new);
             RenderingRegistry.registerEntityRenderingHandler(EntityEarthquake.class, RenderEmpty::new);
+            RenderingRegistry.registerEntityRenderingHandler(EntityVolcano.class, RenderEmpty::new);
         }
     }
 }

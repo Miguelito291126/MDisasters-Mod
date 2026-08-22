@@ -23,10 +23,14 @@ import java.util.List;
 
 public class EntityTornado extends Entity {
 
+    public double speed = MDConfig.TORNADO.speed;
+    public double maxSpeed = MDConfig.TORNADO.maxSpeed;
+
     public EntityTornado(World world) {
         super(world);
         this.setSize(MDConfig.TORNADO.tornadoWidth, MDConfig.TORNADO.tornadoHeight);
         this.noClip = true;
+        this.isImmuneToFire = true;
         this.motionX = 0.2;
         this.motionZ = 0.0;
 
@@ -37,8 +41,8 @@ public class EntityTornado extends Entity {
         this(world);
         float yaw = player.rotationYaw;
 
-        this.motionX = -MathHelper.sin(yaw * 0.017453292F) * MDConfig.TORNADO.speed;
-        this.motionZ = MathHelper.cos(yaw * 0.017453292F) * MDConfig.TORNADO.speed;
+        this.motionX = -MathHelper.sin(yaw * 0.017453292F) * speed;
+        this.motionZ = MathHelper.cos(yaw * 0.017453292F) * speed;
     }
 
     @Override
@@ -88,8 +92,8 @@ public class EntityTornado extends Entity {
                 this.motionX += (this.rand.nextDouble() - 0.5) * 0.3;
                 this.motionZ += (this.rand.nextDouble() - 0.5) * 0.3;
 
-                this.motionX = MathHelper.clamp(this.motionX, -MDConfig.TORNADO.maxSpeed, MDConfig.TORNADO.maxSpeed);
-                this.motionZ = MathHelper.clamp(this.motionZ, -MDConfig.TORNADO.maxSpeed, MDConfig.TORNADO.maxSpeed);
+                this.motionX = MathHelper.clamp(this.motionX, -maxSpeed, maxSpeed);
+                this.motionZ = MathHelper.clamp(this.motionZ, -maxSpeed, maxSpeed);
             }
 
             this.move(MoverType.SELF, this.motionX, 0, this.motionZ);
@@ -162,11 +166,19 @@ public class EntityTornado extends Entity {
     protected void readEntityFromNBT(NBTTagCompound compound) {
         this.motionX = compound.getDouble("MotionX");
         this.motionZ = compound.getDouble("MotionZ");
+
+        if (compound.hasKey("Speed")) {
+            this.speed = compound.getDouble("Speed");
+        }
+        else {
+            this.speed = MDConfig.TORNADO.speed;
+        }
     }
 
     @Override
     protected void writeEntityToNBT(NBTTagCompound compound) {
         compound.setDouble("MotionX", this.motionX);
         compound.setDouble("MotionZ", this.motionZ);
+        compound.setDouble("Speed", this.speed);
     }
 }

@@ -36,7 +36,7 @@ public class ItemMeteorsSpawner extends Item {
             BlockPos targetPos = rayTrace.getBlockPos().offset(rayTrace.sideHit);
 
             if (!world.isRemote) {
-                EntityMeteor meteor = new EntityMeteor(world, player);
+                EntityMeteor meteor = new EntityMeteor(world);
 
                 // Posiciona el meteorito usando el valor de MDConfig.METEOR.meteorDistance
                 meteor.setLocationAndAngles(

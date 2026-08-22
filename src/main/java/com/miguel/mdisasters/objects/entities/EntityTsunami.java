@@ -23,6 +23,8 @@ public class EntityTsunami extends Entity {
         super(world);
         this.setSize(MDConfig.TSUNAMI.waveWidth, MDConfig.TSUNAMI.waveHeight);
         this.noClip = true;
+        this.isImmuneToFire = true;
+
         InitEntities.ENTITIES.add(this);
     }
 
@@ -136,7 +138,8 @@ public class EntityTsunami extends Entity {
     protected void readEntityFromNBT(NBTTagCompound compound) {
         if (compound.hasKey("Speed")) {
             this.speed = compound.getDouble("Speed");
-        } else {
+        }
+        else {
             this.speed = MDConfig.TSUNAMI.speed;
         }
     }

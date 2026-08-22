@@ -33,7 +33,7 @@ public class itemEathquakeSpawner extends Item {
             BlockPos targetPos = raytrace.getBlockPos().offset(raytrace.sideHit);
             if (!worldIn.isRemote)
             {
-                EntityEarthquake earthquake = new EntityEarthquake(worldIn, playerIn);
+                EntityEarthquake earthquake = new EntityEarthquake(worldIn);
                 earthquake.setLocationAndAngles(
                         targetPos.getX() + 0.5,
                         targetPos.getY(),

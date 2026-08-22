@@ -89,7 +89,7 @@ public class DisasterSpawnerHandler {
                 break;
 
             case 4:
-                EntityEarthquake earthquake = new EntityEarthquake(world, player);
+                EntityEarthquake earthquake = new EntityEarthquake(world);
                 earthquake.setPosition(spawnX, targetPos.getY(), spawnZ);
                 world.spawnEntity(earthquake);
 

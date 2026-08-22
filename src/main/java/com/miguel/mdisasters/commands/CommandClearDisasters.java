@@ -50,7 +50,6 @@ public class CommandClearDisasters extends CommandBase {
                     }
                 }
 
-                // Limpiamos la lista global al terminar el recorrido
                 InitEntities.ENTITIES.clear();
 
                 TextComponentString message = new TextComponentString(count + " disasters have been eliminated from the world.");

@@ -1,6 +1,7 @@
 package com.miguel.mdisasters.world;
 
 import com.miguel.mdisasters.init.InitBlocks;
+import com.miguel.mdisasters.objects.entities.EntityVolcano;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -49,6 +50,18 @@ public class WorldGenVolcano extends WorldGenerator {
                     }
                 }
             }
+
+
+        }
+
+        if (!world.isRemote) {
+            EntityVolcano volcano = new EntityVolcano(world);
+            double chimneyX = startPos.getX() + 0.5D;
+            double chimneyY = startPos.getY() + height + 1.0D;
+            double chimneyZ = startPos.getZ() + 0.5D;
+
+            volcano.setPosition(chimneyX, chimneyY, chimneyZ);
+            world.spawnEntity(volcano);
         }
 
         return true;

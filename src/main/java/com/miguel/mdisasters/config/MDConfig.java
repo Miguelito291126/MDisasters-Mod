@@ -28,6 +28,9 @@ public class MDConfig {
     @Config.Comment("Configuración de Inundaciones")
     public static FloodCategory FLOOD = new FloodCategory();
 
+    @Config.Comment("Configuración de Inundaciones")
+    public static VolcanoCategory VOLCANO = new VolcanoCategory();
+
     public static class TsunamiCategory {
         @Config.Comment("Velocidad a la que va")
         @Config.RangeDouble(min = 0.0, max = 200.0)
@@ -129,6 +132,13 @@ public class MDConfig {
         @Config.Comment("Si el agua se expande indefinidamente")
         public boolean infiniteWaterExpansion = false;
     }
+
+    public static class VolcanoCategory {
+        @Config.Comment("Velocidad de presion")
+        @Config.RangeDouble(min = 0.01, max = 20.0)
+        public double Speed = 0.05;
+    }
+
 
     @Mod.EventBusSubscriber(modid = MDMain.MODID)
     private static class EventHandler {

@@ -23,6 +23,8 @@ public class EntityFlood extends Entity {
         super(world);
         this.setSize(1.0f, 1.0f);
         this.noClip = true;
+        this.isImmuneToFire = true;
+
         InitEntities.ENTITIES.add(this);
     }
 
@@ -141,6 +143,10 @@ public class EntityFlood extends Entity {
         if (compound.hasKey("Speed")) {
             this.speed = compound.getDouble("Speed");
         }
+        else {
+            this.speed = MDConfig.FLOOD.waterSpeed;
+        }
+
         if (compound.hasKey("CurrentRadius")) {
             this.currentRadius = compound.getDouble("CurrentRadius");
         }

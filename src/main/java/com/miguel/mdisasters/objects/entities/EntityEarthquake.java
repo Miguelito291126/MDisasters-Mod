@@ -35,12 +35,9 @@ public class EntityEarthquake extends Entity {
         super(world);
         this.setSize(1.0F, 1.0F);
         this.noClip = true;
-        InitEntities.ENTITIES.add(this);
-    }
+        this.isImmuneToFire = true;
 
-    public EntityEarthquake(World world, EntityPlayer player) {
-        this(world);
-        this.setPosition(player.posX, player.posY, player.posZ);
+        InitEntities.ENTITIES.add(this);
     }
 
     @Override
